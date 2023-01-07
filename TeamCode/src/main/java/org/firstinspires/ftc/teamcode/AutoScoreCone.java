@@ -161,12 +161,16 @@ public class AutoScoreCone extends LinearOpMode {
             while(opModeIsActive() && currentDistance > JUNCTION_DISTANCE) {
                 drive(0.2);
                 currentDistance = ((DistanceSensor) cs).getDistance(DistanceUnit.CM);
+                telemetry.addData("Distance (cm)", "%.3f", currentDistance);
+                telemetry.update();
             }
             drive(0);
         } else if ((currentDistance < JUNCTION_DISTANCE)) {
             while(opModeIsActive() && currentDistance > JUNCTION_DISTANCE) {
                 drive(-0.2);
                 currentDistance = ((DistanceSensor) cs).getDistance(DistanceUnit.CM);
+                telemetry.addData("Distance (cm)", "%.3f", currentDistance);
+                telemetry.update();
             }
             drive(0);
         }
