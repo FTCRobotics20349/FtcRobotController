@@ -134,6 +134,7 @@ public class AutoScoreCone extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
+        runtime.reset();
 
         // close claw
         claw.setPosition(0);
@@ -146,7 +147,7 @@ public class AutoScoreCone extends LinearOpMode {
         sensingPole();
 
         // open claw
-        sleep(500);
+        sleep(3000);
         claw.setPosition(1);
         sleep(3500);
     }
