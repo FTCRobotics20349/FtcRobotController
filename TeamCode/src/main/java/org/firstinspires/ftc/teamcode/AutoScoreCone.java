@@ -34,8 +34,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 /**
@@ -85,6 +88,7 @@ public class AutoScoreCone extends LinearOpMode {
 
     private static final int MID_JUNCTION = -1400;
     private static final int MID_JUNCTION_POSITION = 2301;
+    private static final double JUNCTION_DISTANCE = 10.0;
     @Override
     public void runOpMode() {
 
@@ -128,16 +132,38 @@ public class AutoScoreCone extends LinearOpMode {
 
         // close claw
         claw.setPosition(0);
-        sleep(800          );
+        sleep(800);
 
         raiseElevator();
 
         strafeToMidJunction();
 
+        sensingPole();
+
         // open claw
         sleep(500);
         claw.setPosition(1);
         sleep(3500);
+    }
+
+    private void sensingPole() {
+        rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        double currentDistance = ((DistanceSensor) cs).getDistance(DistanceUnit.CM);
+
+        if (currentDistance > JUNCTION_DISTANCE) {
+            while(opModeIsActive() && currentDistance > JUNCTION_DISTANCE) {
+                drive(0.2);
+                currentDistance = ((DistanceSensor) cs).getDistance(DistanceUnit.CM);
+            }
+            drive(0);
+        } else if ((currentDistance < JUNCTION_DISTANCE)) {
+            while(opModeIsActive() && currentDistance > JUNCTION_DISTANCE) {
+                drive(-0.2);
+                currentDistance = ((DistanceSensor) cs).getDistance(DistanceUnit.CM);
+            }
+            drive(0);
+        }
     }
 
     private void strafeToMidJunction() {
