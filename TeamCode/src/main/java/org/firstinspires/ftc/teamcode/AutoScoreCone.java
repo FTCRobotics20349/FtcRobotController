@@ -128,22 +128,19 @@ public class AutoScoreCone extends LinearOpMode {
 
         // close claw
         claw.setPosition(0);
-sleep(800          );
-        // lift elevator
-        elevator.setPower(0.3);
-        while (opModeIsActive() && (elevator.getPower() != 0 )) {
-//            telemetry.addData("Elevator", "power: " + elevator.getPower());
+        sleep(800          );
 
-            // Display it for the driver.
-            telemetry.addData("Running to",   MID_JUNCTION);
-            telemetry.addData("Currently at", elevator.getCurrentPosition());
-            telemetry.update();
+        raiseElevator();
 
-            if (elevator.getCurrentPosition() <= MID_JUNCTION) {
-                elevator.setPower(0);
-            }
-        }
+        strafeToMidJunction();
 
+        // open claw
+        sleep(500);
+        claw.setPosition(1);
+        sleep(3500);
+    }
+
+    private void strafeToMidJunction() {
         // strafe to middle pole
         rightFrontDrive.setTargetPosition(MID_JUNCTION_POSITION);
         rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -159,11 +156,23 @@ sleep(800          );
             telemetry.update();
         }
         strafeLeft(0);
+    }
 
-        // open claw
-        sleep(500);
-        claw.setPosition(1);
-        sleep(3500);
+    private void raiseElevator() {
+        // lift elevator
+        elevator.setPower(0.3);
+        while (opModeIsActive() && (elevator.getPower() != 0 )) {
+//            telemetry.addData("Elevator", "power: " + elevator.getPower());
+
+            // Display it for the driver.
+            telemetry.addData("Running to",   MID_JUNCTION);
+            telemetry.addData("Currently at", elevator.getCurrentPosition());
+            telemetry.update();
+
+            if (elevator.getCurrentPosition() <= MID_JUNCTION) {
+                elevator.setPower(0);
+            }
+        }
     }
 
     private void drive(double speed) {
