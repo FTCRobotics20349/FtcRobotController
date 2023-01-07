@@ -87,8 +87,8 @@ public class AutoScoreCone extends LinearOpMode {
     Servo claw;
 
     private static final int MID_JUNCTION = -1400;
-    private static final int MID_JUNCTION_POSITION = 2301;
-    private static final double JUNCTION_DISTANCE = 10.0;
+    private static final int MID_JUNCTION_POSITION = 2201;
+    private static final double JUNCTION_DISTANCE = 13.5;
     @Override
     public void runOpMode() {
 
