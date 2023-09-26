@@ -27,13 +27,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.ftc2022_2023;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -65,10 +66,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="AutoDriveBackwards", group="Robot")
+@Autonomous(name="AutoDrveForward", group="Robot")
 
 //@Disabled
-public class AutoDriveBackwards extends LinearOpMode {
+public class AutoDriveForward extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -77,8 +78,10 @@ public class AutoDriveBackwards extends LinearOpMode {
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
     private DcMotor elevator = null;
-    Servo claw;
 
+    private ColorSensor cs = null;
+
+    Servo claw;
 
     @Override
     public void runOpMode() {
@@ -91,6 +94,7 @@ public class AutoDriveBackwards extends LinearOpMode {
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
         elevator = hardwareMap.get(DcMotor.class, "elevator");
         claw = hardwareMap.get(Servo.class, "claw");
+        cs = hardwareMap.get(ColorSensor.class, "color");
 
         elevator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         elevator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -126,18 +130,27 @@ public class AutoDriveBackwards extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         // autounamas code
         while (opModeIsActive()) {
-            drive(-0.2);
-            sleep(5);
+
+
+            //runtime.reset();
+
+            while (opModeIsActive() && (runtime.seconds() < 1.0)) {
+                drive(0.5);
+                telemetry.addData("Path", "Leg 3: %4.1f S Elapsed", runtime.seconds());
+                telemetry.update();
+
+            }
             drive(0);
+            // Show the elapsed game time and wheel power.
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Front left/Right", "%4.2f, %4.2f");
+            telemetry.addData("Back  left/Right", "%4.2f, %4.2f");
+            telemetry.addData("Elevator", "Position: " + elevator.getCurrentPosition());
+
+            telemetry.update();
+
+
         }
-        // Show the elapsed game time and wheel power.
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Front left/Right", "%4.2f, %4.2f");
-        telemetry.addData("Back  left/Right", "%4.2f, %4.2f");
-        telemetry.addData("Elevator", "Position: " + elevator.getCurrentPosition());
-
-        telemetry.update();
-
     }
 
     private void drive(double speed) {

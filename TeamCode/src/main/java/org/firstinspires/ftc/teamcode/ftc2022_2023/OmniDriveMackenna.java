@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.ftc2022_2023;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -66,9 +66,9 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="MackennaPracticeAlone", group="Linear Opmode")
+@TeleOp(name="OmniDriveMackenna", group="Linear Opmode")
 //@Disabled
-public class MackennaPracticeAlone extends LinearOpMode {
+public class OmniDriveMackenna extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -196,17 +196,17 @@ public class MackennaPracticeAlone extends LinearOpMode {
             }*/
 
             //Elevator Code
-            if (gamepad1.dpad_up) {
+            if (gamepad2.dpad_up) {
                 elevator.setPower(-1);
-            } else if (gamepad1.dpad_down) {
+            } else if (gamepad2.dpad_down) {
                 elevator.setPower(1);
             } else {
                 elevator.setPower(0);
             }
             //claw
-            if (gamepad1.x) {
+            if (gamepad2.x) {
                 claw.setPosition(0);
-            } else if (gamepad1.b) {
+            } else if (gamepad2.b) {
                 claw.setPosition(1);
             }
 

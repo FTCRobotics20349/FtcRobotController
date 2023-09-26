@@ -27,16 +27,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.ftc2022_2023;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 /**
@@ -67,9 +69,10 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="OmniDriveEvandy", group="Linear Opmode")
+@Autonomous(name="AutoScoreCone", group="Robot")
+
 //@Disabled
-public class OmniDriveEvandy extends LinearOpMode {
+public class AutoScoreCone extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -78,10 +81,14 @@ public class OmniDriveEvandy extends LinearOpMode {
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
     private DcMotor elevator = null;
+
+    private ColorSensor cs = null;
+
     Servo claw;
-    DigitalChannel digitalTouch;  // Hardware Device Object
 
-
+    private static final int MID_JUNCTION = -1400;
+    private static final int MID_JUNCTION_POSITION = 2201;
+    private static final double JUNCTION_DISTANCE = 13.5;
     @Override
     public void runOpMode() {
 
@@ -93,17 +100,19 @@ public class OmniDriveEvandy extends LinearOpMode {
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
         elevator = hardwareMap.get(DcMotor.class, "elevator");
         claw = hardwareMap.get(Servo.class, "claw");
+        cs = hardwareMap.get(ColorSensor.class, "color");
 
         elevator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         elevator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        int elevatorMin = 0;
-        int elevatorMax = -1000;
-
-        //telemetry.addData("Elevator", "Position: " + elevator.getCurrentPosition());
-
-        //telemetry.update();
-
+        rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
         // ########################################################################################
@@ -118,122 +127,103 @@ public class OmniDriveEvandy extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        elevator.setDirection(DcMotorSimple.Direction.FORWARD);
-        elevator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        // Wait for the game to start (driver presses PLAY)
-        //telemetry.addData("Status", "Initialized");
-        //telemetry.update();
+        elevator.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        // Wait for the game to start (driver presses PLAY)
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
 
         waitForStart();
         runtime.reset();
 
-        // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
+        // close claw
+        claw.setPosition(0);
+        sleep(800);
 
-            //telemetry.addData("Elevator", "Position: " + elevator.getCurrentPosition());
-            //telemetry.addData("claw", "Position: " + claw.getPosition());
-            //telemetry.update();
+        raiseElevator();
 
-            //double max;
+        strafeToMidJunction();
 
-            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral = gamepad1.left_stick_x;
-            double yaw = gamepad1.right_stick_x;
+        sensingPole();
 
-            // Combine the joystick requests for each axis-motion to determine each wheel's power.
-            // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower = axial + lateral + yaw;
-            double rightFrontPower = axial - lateral - yaw;
-            double leftBackPower = axial - lateral + yaw;
-            double rightBackPower = axial + lateral - yaw;
+        // open claw
+        sleep(3000);
+        claw.setPosition(1);
+        sleep(3500);
+    }
 
-            /*
-            // Normalize the values so no wheel power exceeds 100%
-            // This ensures that the robot maintains the desired motion.
-            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-            max = Math.max(max, Math.abs(leftBackPower));
-            max = Math.max(max, Math.abs(rightBackPower));
-             */
+    private void sensingPole() {
+        rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-            //telemetry.addData("MAX", max);
+        double currentDistance = ((DistanceSensor) cs).getDistance(DistanceUnit.CM);
+
+        if (currentDistance > JUNCTION_DISTANCE) {
+            while(opModeIsActive() && currentDistance > JUNCTION_DISTANCE) {
+                drive(0.2);
+                currentDistance = ((DistanceSensor) cs).getDistance(DistanceUnit.CM);
+                telemetry.addData("Distance (cm)", "%.3f", currentDistance);
+                telemetry.update();
+            }
+            drive(0);
+        } else if ((currentDistance < JUNCTION_DISTANCE)) {
+            while(opModeIsActive() && currentDistance > JUNCTION_DISTANCE) {
+                drive(-0.2);
+                currentDistance = ((DistanceSensor) cs).getDistance(DistanceUnit.CM);
+                telemetry.addData("Distance (cm)", "%.3f", currentDistance);
+                telemetry.update();
+            }
+            drive(0);
+        }
+    }
+
+    private void strafeToMidJunction() {
+        // strafe to middle pole
+        rightFrontDrive.setTargetPosition(MID_JUNCTION_POSITION);
+        rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        strafeLeft(0.3);
+        while (opModeIsActive() &&
+                (rightFrontDrive.isBusy())) {
+
+            // Display it for the driver.
+            telemetry.addData("Running to",   MID_JUNCTION_POSITION);
+            telemetry.addData("Currently at",
+                    rightFrontDrive.getCurrentPosition());
+            telemetry.update();
+        }
+        strafeLeft(0);
+    }
+
+    private void raiseElevator() {
+        // lift elevator
+        elevator.setPower(0.3);
+        while (opModeIsActive() && (elevator.getPower() != 0 )) {
+//            telemetry.addData("Elevator", "power: " + elevator.getPower());
+
+            // Display it for the driver.
+            telemetry.addData("Running to",   MID_JUNCTION);
+            telemetry.addData("Currently at", elevator.getCurrentPosition());
             telemetry.update();
 
-            // This is test code:
-            //
-            // Uncomment the following code to test your motor directions.
-            // Each button should make the corresponding motor run FORWARD.
-            //   1) First get all the motors to take to correct positions on the robot
-            //      by adjusting your Robot Configuration if necessary.
-            //   2) Then make sure they run in the correct direction by modifying the
-            //      the setDirection() calls above.
-            // Once the correct motors move in the correct direction re-comment this code.
-
-            /*
-            leftFrontPower  = gamepad1.x ? 1.0 : 0.0;  // X gamepad
-            leftBackPower   = gamepad1.a ? 1.0 : 0.0;  // A gamepad
-            rightFrontPower = gamepad1.y ? 1.0 : 0.0;  // Y gamepad
-            rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
-            */
-
-            // Send calculated power to wheels
-            // SETTING DRIVE SPEED MANUALLY HERE - SULLY
-            leftFrontDrive.setPower(leftFrontPower * 0.4);
-            rightFrontDrive.setPower(rightFrontPower * 0.4);
-            leftBackDrive.setPower(leftBackPower * 0.4);
-            rightBackDrive.setPower(rightBackPower * 0.4);
-
-            //thing that makes arm stay up
-            //telemetry.addData("Starting at",  "%7d",
-            //elevator.getCurrentPosition());
-
-            //telemetry.update();
-/*
-            //TOuch Sensor Calibration
-            if (digitalTouch.getState() == true) {
-                elevator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                elevator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                telemetry.addData("Digital Touch", "Is Not Pressed");
-            }*/
-
-            //Elevator Code
-            if (gamepad2.dpad_up) {
-                elevator.setPower(-1);
-            } else if (gamepad2.dpad_down) {
-                elevator.setPower(1);
-            } else {
+            if (elevator.getCurrentPosition() <= MID_JUNCTION) {
                 elevator.setPower(0);
             }
-            //claw
-            if (gamepad2.x) {
-                claw.setPosition(0);
-            } else if (gamepad2.b) {
-                claw.setPosition(1);
-            }
-
         }
-
-
-        // Show the elapsed game time and wheel power.
-        /*
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Front left/Right", "%4.2f, %4.2f");
-        telemetry.addData("Back  left/Right", "%4.2f, %4.2f");
-        telemetry.addData("Elevator", "Position: " + elevator.getCurrentPosition());
-
-        telemetry.update();
-        */
-
-
     }
-}
-/*
-if (dpad.up.ispressed() || dpad.down.ispressed()){
-    servo.postion(1);
-        }
-else {
-    servo.positon(0);
-        }
 
- */
+    private void drive(double speed) {
+        rightBackDrive.setPower(speed);
+        rightFrontDrive.setPower(speed);
+        leftBackDrive.setPower(speed);
+        leftFrontDrive.setPower(speed);
+    }
+
+    private void strafeLeft(double speed) {
+        rightBackDrive.setPower(-speed);
+        rightFrontDrive.setPower(speed);
+        leftBackDrive.setPower(speed);
+        leftFrontDrive.setPower(-speed);
+    }
+
+}

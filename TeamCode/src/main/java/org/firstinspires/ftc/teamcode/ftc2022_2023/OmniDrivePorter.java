@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.ftc2022_2023;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+
 
 /**
  * This file contains an example of a Linear "OpMode".
@@ -66,9 +67,9 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="OmniDriveMackenna", group="Linear Opmode")
+@TeleOp(name="OmniDrivePorter", group="Linear Opmode")
 //@Disabled
-public class OmniDriveMackenna extends LinearOpMode {
+public class OmniDrivePorter extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -117,8 +118,8 @@ public class OmniDriveMackenna extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        elevator.setDirection(DcMotorSimple.Direction.FORWARD);
-        elevator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        elevator.setDirection(DcMotorSimple.Direction.REVERSE);
+//        elevator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         // Wait for the game to start (driver presses PLAY)
         //telemetry.addData("Status", "Initialized");
         //telemetry.update();
@@ -129,9 +130,11 @@ public class OmniDriveMackenna extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            //telemetry.addData("Elevator", "Position: " + elevator.getCurrentPosition());
-            //telemetry.addData("claw", "Position: " + claw.getPosition());
-            //telemetry.update();
+            telemetry.addData("Elevator", "Position: " + elevator.getCurrentPosition());
+            telemetry.addData("Elevator", "power: " + elevator.getPower());
+
+//            telemetry.addData("claw", "Position: " + claw.getPosition());
+            telemetry.update();
 
             //double max;
 
@@ -184,7 +187,7 @@ public class OmniDriveMackenna extends LinearOpMode {
 
             //thing that makes arm stay up
             //telemetry.addData("Starting at",  "%7d",
-            //elevator.getCurrentPosition());
+                    //elevator.getCurrentPosition());
 
             //telemetry.update();
 /*
@@ -214,14 +217,12 @@ public class OmniDriveMackenna extends LinearOpMode {
 
 
         // Show the elapsed game time and wheel power.
-        /*
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Front left/Right", "%4.2f, %4.2f");
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f");
         telemetry.addData("Elevator", "Position: " + elevator.getCurrentPosition());
 
         telemetry.update();
-        */
 
 
     }
