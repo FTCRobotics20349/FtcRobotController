@@ -51,8 +51,9 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
-@Disabled
+
+@TeleOp(name="Basic: Linear OpMode", group="TeleOp")
+//@Disabled
 public class BasicOpMode_Linear extends LinearOpMode {
 
     // Declare OpMode members.
@@ -73,7 +74,7 @@ public class BasicOpMode_Linear extends LinearOpMode {
         leftFrontDrive  = hardwareMap.get(DcMotor.class, "lfdrove");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "rfdrive");
         leftBackDrive = hardwareMap.get(DcMotor.class, "lbdrive");
-        rightBackDrive = hardwareMap.get(DcMotor.class "rdrive");
+        rightBackDrive = hardwareMap.get(DcMotor.class,    "rdrive");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -119,7 +120,7 @@ public class BasicOpMode_Linear extends LinearOpMode {
             rightBackDrive.setPower(rightstrafe);
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+            telemetry.addData("Motors", "left (%.2f), right (%.2f)");
             telemetry.update();
         }
     }
