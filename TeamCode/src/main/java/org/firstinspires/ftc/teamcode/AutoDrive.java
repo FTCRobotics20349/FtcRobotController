@@ -42,14 +42,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Autonomous(name="Auto Drive", group="Robot")
 
 //@Disabled
-public class AutoDrive extends LinearOpMode {
+public class    AutoDrive extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftFrontDrive = null;
-    private DcMotor leftBackDrive = null;
-    private DcMotor rightFrontDrive = null;
-    private DcMotor rightBackDrive = null;
+    private DcMotor leftFrontMotor = null;
+    private DcMotor leftBackMotor = null;
+    private DcMotor rightFrontMotor = null;
+    private DcMotor rightBackMotor = null;
 
 
     @Override
@@ -67,17 +67,17 @@ public class AutoDrive extends LinearOpMode {
 
 
     private void drive(double speed) {
-        rightBackDrive.setPower(speed);
-        rightFrontDrive.setPower(speed);
-        leftBackDrive.setPower(speed);
-        leftFrontDrive.setPower(speed);
+        rightBackMotor.setPower(speed);
+        rightFrontMotor.setPower(speed);
+        leftBackMotor.setPower(speed);
+        leftFrontMotor.setPower(speed);
     }
 
     private void strafeLeft(double speed) {
-        rightBackDrive.setPower(-speed);
-        rightFrontDrive.setPower(speed);
-        leftBackDrive.setPower(speed);
-        leftFrontDrive.setPower(-speed);
+        rightBackMotor.setPower(-speed);
+        rightFrontMotor.setPower(speed);
+        leftBackMotor.setPower(speed);
+        leftFrontMotor.setPower(-speed);
     }
 
     private void strafeRight(double speed) {
@@ -85,18 +85,18 @@ public class AutoDrive extends LinearOpMode {
     }
 
     private void strafeToPosition(double speed, int position) {
-        rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFrontDrive.setTargetPosition(position);
-        rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFrontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFrontMotor.setTargetPosition(position);
+        rightFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         strafeRight(speed);
         while (opModeIsActive() &&
-                (rightFrontDrive.isBusy())) {
+                (rightFrontMotor.isBusy())) {
 
             // Display it for the driver.
             telemetry.addData("Running to",  position);
             telemetry.addData("Currently at",
-                    rightFrontDrive.getCurrentPosition());
+                    rightFrontMotor.getCurrentPosition());
             telemetry.update();
         }
         strafeRight(0);
@@ -104,18 +104,18 @@ public class AutoDrive extends LinearOpMode {
 
     private void park() {
         // back up to park
-        rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFrontDrive.setTargetPosition(-300);
-        rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFrontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFrontMotor.setTargetPosition(-300);
+        rightFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         drive(-0.3);
         while (opModeIsActive() &&
-                (rightFrontDrive.isBusy())) {
+                (rightFrontMotor.isBusy())) {
 
             // Display it for the driver.
             telemetry.addData("Running to", 1000);
             telemetry.addData("Currently at",
-                    rightFrontDrive.getCurrentPosition());
+                    rightFrontMotor.getCurrentPosition());
             telemetry.update();
         }
         drive(0);
@@ -128,23 +128,23 @@ public class AutoDrive extends LinearOpMode {
     private void motorSetup() {
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
-        leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        leftFrontMotor = hardwareMap.get(DcMotor.class, "frontLeftMotor");
+        leftBackMotor = hardwareMap.get(DcMotor.class, "backLeftMotor");
+        rightFrontMotor = hardwareMap.get(DcMotor.class, "frontRightMotor");
+        rightBackMotor = hardwareMap.get(DcMotor.class, "backRightMotor");
 
-        rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFrontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFrontMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFrontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFrontMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBackMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBackMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBackMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBackMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
+        leftBackMotor.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontMotor.setDirection(DcMotor.Direction.FORWARD);
+        rightBackMotor.setDirection(DcMotor.Direction.FORWARD);
     }
 }
