@@ -1,4 +1,4 @@
-package ftc2023_2024;
+package org.firstinspires.ftc.teamcode.ftc2023_2024;
 
 import  com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
