@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -41,7 +42,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Autonomous(name="Auto Drive", group="Robot")
 
-//@Disabled
+@Disabled
 public class    AutoDrive extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
@@ -86,7 +87,7 @@ public class    AutoDrive extends LinearOpMode {
 
     private void strafeToPosition(double speed, int position) {
         rightFrontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFrontMotor.setTargetPosition(position);
+        rightFrontMotor.setTargetPosition(100);
         rightFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         strafeRight(speed);

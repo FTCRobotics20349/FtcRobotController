@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.ftc2022_2023;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -67,7 +68,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
  */
 
 @TeleOp(name="MackennaPracticeAlone", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class MackennaPracticeAlone extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.

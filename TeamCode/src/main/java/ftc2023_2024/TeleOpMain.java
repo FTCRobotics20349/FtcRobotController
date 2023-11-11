@@ -1,6 +1,6 @@
-package org.firstinspires.ftc.teamcode;
+package ftc2023_2024;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import  com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -19,8 +19,11 @@ public class TeleOpMain extends LinearOpMode {
     DcMotor backRightMotor = null;
     DcMotor rightLift = null;
     DcMotor leftLift = null;
-    Servo claw = null;
+    private Servo claw = null;
+    DcMotor wrist = null;
     IMU imu = null;
+
+
 
 
     @Override
@@ -58,10 +61,17 @@ public class TeleOpMain extends LinearOpMode {
             double frontRightPower = (rotY - rotX - rx) / denominator;
             double backRightPower = (rotY + rotX - rx) / denominator;
 
-            frontLeftMotor.setPower(frontLeftPower);
-            backLeftMotor.setPower(backLeftPower);
-            frontRightMotor.setPower(frontRightPower);
-            backRightMotor.setPower(backRightPower);
+            frontLeftMotor.setPower(frontLeftPower/2);
+            backLeftMotor.setPower(backLeftPower/2);
+            frontRightMotor.setPower(frontRightPower/2);
+            backRightMotor.setPower(backRightPower/2);
+
+            if (gamepad1.right_bumper){
+                frontLeftMotor.setPower(frontLeftPower*2);
+                backLeftMotor.setPower(backLeftPower*2);
+                frontRightMotor.setPower(frontRightPower*2);
+                backRightMotor.setPower(backRightPower*2);
+            }
 
             // lift code
             double rightPower = gamepad2.right_stick_y;
@@ -72,9 +82,15 @@ public class TeleOpMain extends LinearOpMode {
 
 
             // claw code
-            if (gamepad2.a){
+            while (gamepad2.a){
                 claw.setPosition(1);
             }
+           while (gamepad2.b){
+               claw.setPosition(0);
+           }
+
+           //wrist
+            wrist.setPower(gamepad2.left_stick_y/2);
 
         }
     }
@@ -90,21 +106,24 @@ public class TeleOpMain extends LinearOpMode {
         rightLift = hardwareMap.dcMotor.get("rightLift");
         leftLift = hardwareMap.dcMotor.get("leftLift");
 
-        claw = hardwareMap.servo.get("claw");
+        claw = hardwareMap.get(Servo.class,"claw");
+        wrist = hardwareMap.dcMotor.get("wrist");
+
+
 
         // Reverse the right side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
         // reverse the left side instead.
         // See the note about this earlier on this page.
-        frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Retrieve the IMU from the hardware map
         imu = hardwareMap.get(IMU.class, "imu");
         // Adjust the orientation parameters to match your robot
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
+                RevHubOrientationOnRobot.UsbFacingDirection.LEFT));
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
 
