@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "AutoParkBlue", group = "Robot")
+@Autonomous(name = "AutoLineBlue", group = "Robot")
 //@Disabled
-public class AutoParkBlue extends LinearOpMode {
+public class AutoLineBlue extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     DcMotor frontLeftMotor = null;
@@ -33,9 +33,13 @@ public class AutoParkBlue extends LinearOpMode {
         waitForStart();
         telemetry.addData("Status", "Started");
 
+
+        driveForward(.75, 3500);
 //        strafeRight(0.5);
-        strafeToPosition(.75,4000 );
+        strafeToPosition(.75,4000);
+
     }
+
 
     private void strafeRight(double speed){
         telemetry.addData("Status", "Auto");
@@ -45,14 +49,32 @@ public class AutoParkBlue extends LinearOpMode {
         backRightMotor.setPower(speed);
     }
 
+    private void driveForward(double speed, int position) {
+        telemetry.addData("driveForward", position);
+        telemetry.addData("speed", speed);
+
+        go2(position);
+
+        strafeRight(speed);
+        while (opModeIsActive() &&
+                (frontLeftMotor.isBusy())) {
+
+            // Display it for the driver.
+            telemetry.addData("Running to",  position);
+            telemetry.addData("Currently at",
+                    frontLeftMotor.getCurrentPosition());
+            telemetry.update();
+        }
+    }
+
     private void strafeToPosition(double speed, int position) {
         telemetry.addData("StrafeToPosition", position);
         telemetry.addData("speed", speed);
 
-        listofruns(position);
+        go1(position);
 
         strafeRight(speed);
-            while (opModeIsActive() &&
+        while (opModeIsActive() &&
                 (frontLeftMotor.isBusy())) {
 
             // Display it for the driver.
@@ -90,7 +112,7 @@ public class AutoParkBlue extends LinearOpMode {
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
     }
-    private void listofruns(int position){
+    private void go1(int position){
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontLeftMotor.setTargetPosition(-position);
         frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -105,6 +127,24 @@ public class AutoParkBlue extends LinearOpMode {
 
         backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRightMotor.setTargetPosition(-position);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    private void go2(int position){
+        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeftMotor.setTargetPosition(position);
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightMotor.setTargetPosition(position);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftMotor.setTargetPosition(position);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightMotor.setTargetPosition(position);
         backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 }
