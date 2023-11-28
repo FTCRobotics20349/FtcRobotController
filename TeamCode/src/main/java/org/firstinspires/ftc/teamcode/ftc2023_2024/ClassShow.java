@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "AutoLineRed", group = "Robot")
+@Autonomous(name = "ClassShow", group = "Robot")
 //@Disabled
-public class AutoLineRed extends LinearOpMode {
+public class ClassShow extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     DcMotor frontLeftMotor = null;
@@ -34,14 +34,22 @@ public class AutoLineRed extends LinearOpMode {
         telemetry.addData("Status", "Started");
 
 
-        driveForward(.75, 3500);
-//        strafeRight(0.5);
-        strafeToPosition(.75,4000);
+        driveForward(.75, 1000);
+        strafeRight(.75,1000);
+        driveForward(.75,1000);
+        driveBackward(.75,1000);
+        strafeLeft(.75,2000);
+        driveForward(.75,1000);
+        driveBackward(.75,1000);
+        strafeRight(.75,1000);
+        driveBackward(.75,1000);
+
+
 
     }
 
 
-    private void strafeRight(double speed){
+    private void strafeSU(double speed){
         telemetry.addData("Status", "Auto");
         frontRightMotor.setPower(-speed);
         frontLeftMotor.setPower(speed);
@@ -50,30 +58,12 @@ public class AutoLineRed extends LinearOpMode {
     }
 
     private void driveForward(double speed, int position) {
-        telemetry.addData("driveForward", position);
-        telemetry.addData("speed", speed);
-
-        go2(position);
-
-        strafeRight(speed);
-        while (opModeIsActive() &&
-                (frontLeftMotor.isBusy())) {
-
-            // Display it for the driver.
-            telemetry.addData("Running to",  position);
-            telemetry.addData("Currently at",
-                    frontLeftMotor.getCurrentPosition());
-            telemetry.update();
-        }
-    }
-
-    private void strafeToPosition(double speed, int position) {
-        telemetry.addData("StrafeToPosition", position);
+        telemetry.addData("driveForward1", position);
         telemetry.addData("speed", speed);
 
         go1(position);
 
-        strafeRight(speed);
+        strafeSU(speed);
         while (opModeIsActive() &&
                 (frontLeftMotor.isBusy())) {
 
@@ -84,6 +74,60 @@ public class AutoLineRed extends LinearOpMode {
             telemetry.update();
         }
     }
+    private void strafeRight(double speed, int position) {
+        telemetry.addData("strafeRight1", position);
+        telemetry.addData("speed", speed);
+
+        go4(position);
+
+        strafeSU(speed);
+        while (opModeIsActive() &&
+                (frontLeftMotor.isBusy())) {
+
+            // Display it for the driver.
+            telemetry.addData("Running to",  position);
+            telemetry.addData("Currently at",
+                    frontLeftMotor.getCurrentPosition());
+            telemetry.update();
+        }
+    }
+
+    private void strafeLeft(double speed, int position) {
+        telemetry.addData("strafeLeft1", position);
+        telemetry.addData("speed", speed);
+
+        go2(position);
+
+        strafeSU(speed);
+        while (opModeIsActive() &&
+                (frontLeftMotor.isBusy())) {
+
+            // Display it for the driver.
+            telemetry.addData("Running to",  position);
+            telemetry.addData("Currently at",
+                    frontLeftMotor.getCurrentPosition());
+            telemetry.update();
+        }
+    }
+
+    private void driveBackward(double speed, int position) {
+        telemetry.addData("driveBackward1", position);
+        telemetry.addData("speed", speed);
+
+        go3(position);
+
+        strafeSU(speed);
+        while (opModeIsActive() &&
+                (frontLeftMotor.isBusy())) {
+
+            // Display it for the driver.
+            telemetry.addData("Running to",  position);
+            telemetry.addData("Currently at",
+                    frontLeftMotor.getCurrentPosition());
+            telemetry.update();
+        }
+    }
+
 
 
     private void setup() {
@@ -107,12 +151,75 @@ public class AutoLineRed extends LinearOpMode {
         backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        wrist.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        wrist.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
     }
+    private void wrist(int position){
+        wrist.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        wrist.setTargetPosition(position);
+        wrist.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+    //Drive Forward
     private void go1(int position){
+        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeftMotor.setTargetPosition(position);
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightMotor.setTargetPosition(position);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftMotor.setTargetPosition(position);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightMotor.setTargetPosition(position);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    //Strafe Left
+    private void go2(int position){
+        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeftMotor.setTargetPosition(-position);
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightMotor.setTargetPosition(position);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftMotor.setTargetPosition(position);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightMotor.setTargetPosition(-position);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+    //Drive Backward
+    private void go3(int position){
+        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeftMotor.setTargetPosition(-position);
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightMotor.setTargetPosition(-position);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftMotor.setTargetPosition(-position);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightMotor.setTargetPosition(-position);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+    //Strafe Right
+    private void go4(int position){
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontLeftMotor.setTargetPosition(position);
         frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -130,21 +237,4 @@ public class AutoLineRed extends LinearOpMode {
         backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
-    private void go2(int position){
-        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeftMotor.setTargetPosition(position);
-        frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRightMotor.setTargetPosition(position);
-        frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeftMotor.setTargetPosition(position);
-        backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRightMotor.setTargetPosition(position);
-        backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    }
 }

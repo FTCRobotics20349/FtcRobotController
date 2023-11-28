@@ -34,6 +34,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.teamcode.ftc2023_2024.ClawStuffies;
+import org.firstinspires.ftc.teamcode.ftc2023_2024.ArmStuffies;
+import org.firstinspires.ftc.teamcode.ftc2023_2024.WristStuffies;
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -73,12 +76,11 @@ public class TeleOpMain extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    private DcMotor rightLift = null;
-    private DcMotor leftLift = null;
-    private Servo claw = null;
-    private DcMotor wrist = null;
     private DcMotor slider = null;
 
+    ClawStuffies claw = new ClawStuffies();
+    ArmStuffies lift = new ArmStuffies();
+    WristStuffies wrist = new WristStuffies();
     @Override
     public void runOpMode() {
 
@@ -88,16 +90,15 @@ public class TeleOpMain extends LinearOpMode {
         leftBackDrive  = hardwareMap.get(DcMotor.class, "backLeftMotor");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "frontRightMotor");
         rightBackDrive = hardwareMap.get(DcMotor.class, "backRightMotor");
-        rightLift = hardwareMap.dcMotor.get("rightLift");
-        leftLift = hardwareMap.dcMotor.get("leftLift");
-        claw = hardwareMap.get(Servo.class,"claw");
-        wrist = hardwareMap.dcMotor.get("wrist");
+        lift.lift = hardwareMap.dcMotor.get("lift");
+        claw.leftClaw = hardwareMap.get(Servo.class,"leftclaw");
+        claw.rightClaw = hardwareMap.get(Servo.class,"rightclaw");
+        wrist.wrist = hardwareMap.dcMotor.get("wrist");
         slider = hardwareMap.get(DcMotor.class, "slider");
 
 
+
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-//        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-//        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
@@ -143,18 +144,18 @@ public class TeleOpMain extends LinearOpMode {
             }
 
             // Send calculated power to wheels
-            leftFrontDrive.setPower(frontLeftPower/2);
-            rightFrontDrive.setPower(frontRightPower/2);
-            leftBackDrive.setPower(backLeftPower/2);
-            rightBackDrive.setPower(backRightPower/2);
+            leftFrontDrive.setPower(frontLeftPower);
+            rightFrontDrive.setPower(frontRightPower);
+            leftBackDrive.setPower(backLeftPower);
+            rightBackDrive.setPower(backRightPower);
 
             //NOS ENGAGED ZOOOOOM
             if (gamepad1.right_bumper){
                 gamepad1.rumble(8000);
-                leftFrontDrive.setPower(frontLeftPower*2);
-                rightFrontDrive.setPower(frontRightPower*2);
-                leftBackDrive.setPower(backLeftPower*2);
-                rightBackDrive.setPower(backRightPower*2);
+                leftFrontDrive.setPower(frontLeftPower/2);
+                rightFrontDrive.setPower(frontRightPower/2);
+                leftBackDrive.setPower(backLeftPower/2);
+                rightBackDrive.setPower(backRightPower/2);
             }
 
 
@@ -166,25 +167,26 @@ public class TeleOpMain extends LinearOpMode {
             telemetry.update();
 
             // lift code
-            double rightPower = gamepad2.right_stick_y;
-            double leftPower = gamepad2.right_stick_y;
-
-            rightLift.setPower(rightPower);
-            leftLift.setPower(leftPower);
+            double  upDown = gamepad2.right_stick_y;
+            lift.lift(upDown);
 
 
-            // claw code
-            while (gamepad2.a){
-                claw.setPosition(1);
-            }
-            while (gamepad2.b){
-                claw.setPosition(0);
-            }
+            boolean openClose;
+            if(gamepad2.a)
+                openClose = true;
+            else
+                openClose = false;
+            claw.claw(openClose);
+            
+
 
             //wrist
-            wrist.setPower(gamepad2.left_stick_y/2);
+            double frick = gamepad2.left_stick_y;
+            wrist.wrist(frick/3);
+            wrist.wrist.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
             if (gamepad2.y){
-                wrist.setTargetPosition(60);
+                wrist.wrist.setTargetPosition(1);
             }
 
             //slider
@@ -195,8 +197,8 @@ public class TeleOpMain extends LinearOpMode {
                 slider.setPower(out);
             }
             if (gamepad2.left_trigger >.01){
-                slider.setPower(in);
+            slider.setPower(in);
             }
 
         }
-    }}
+}}
