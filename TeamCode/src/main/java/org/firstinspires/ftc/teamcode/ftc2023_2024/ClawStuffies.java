@@ -10,11 +10,11 @@ public class ClawStuffies {
 
    public void claw(boolean boo){
        if (boo){
-           leftClaw.setPosition(0);
+           leftClaw.setPosition(.1);
            rightClaw.setPosition(1);
        }
        else{
-           leftClaw.setPosition(2);
+           leftClaw.setPosition(1);
            rightClaw.setPosition(0);
        }
    }

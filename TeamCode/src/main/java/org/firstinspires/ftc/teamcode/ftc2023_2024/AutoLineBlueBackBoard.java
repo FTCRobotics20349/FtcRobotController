@@ -5,22 +5,19 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.teamcode.ftc2023_2024.WristStuffies;
-import org.firstinspires.ftc.teamcode.ftc2023_2024.ArmStuffies;
-import org.firstinspires.ftc.teamcode.ftc2023_2024.ClawStuffies;
 
-@Autonomous(name = "AutoLineBlueClose", group = "Robot")
+@Autonomous(name = "AutoLineBlueBackBoard", group = "Robot")
 //@Disabled
-public class AutoLineBlueClose extends LinearOpMode {
+public class AutoLineBlueBackBoard extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     DcMotor frontLeftMotor = null;
     DcMotor backLeftMotor = null;
     DcMotor frontRightMotor = null;
     DcMotor backRightMotor = null;
-    DcMotor rightLift = null;
-    DcMotor leftLift = null;
-    private Servo claw = null;
+    DcMotor lift = null;
+    Servo leftClaw = null;
+    Servo rightClaw = null;
     DcMotor wrist = null;
 
     @Override
@@ -38,7 +35,11 @@ public class AutoLineBlueClose extends LinearOpMode {
 
         driveForward(.75, 1500);
         driveBackward(.75,200);
-        strafeLeft(.75,2000);
+        spin(.75, -1500);
+        driveForward(.75, 2000);
+        lift(1,1000);
+        Wrist(1, -200);
+        claw(1);
 
     }
 
@@ -49,7 +50,18 @@ public class AutoLineBlueClose extends LinearOpMode {
         frontLeftMotor.setPower(speed);
         backLeftMotor.setPower(-speed);
         backRightMotor.setPower(speed);
-        wrist.setPower(speed);
+
+    }
+    private void hi(double dang){
+        wrist.setPower(dang);
+    }
+    private void claw(int position){
+        telemetry.addData("claw", position);
+        leftClaw.setPosition(-position);
+        rightClaw.setPosition(position);
+    }
+    private void nice(double boo){
+        wrist.setPower(boo);
     }
 
     private void driveForward(double speed, int position) {
@@ -122,14 +134,31 @@ public class AutoLineBlueClose extends LinearOpMode {
             telemetry.update();
         }
     }
+    private void spin(double speed, int position) {
+        telemetry.addData("spin", position);
+        telemetry.addData("speed", speed);
+
+        spin(position);
+
+        strafeSU(speed);
+        while (opModeIsActive() &&
+                (frontLeftMotor.isBusy())) {
+
+            // Display it for the driver.
+            telemetry.addData("Running to",  position);
+            telemetry.addData("Currently at",
+                    frontLeftMotor.getCurrentPosition());
+            telemetry.update();
+        }
+    }
 
     private void Wrist(double speed, int position) {
-        telemetry.addData("driveBackward1", position);
+        telemetry.addData("wrist", position);
         telemetry.addData("speed", speed);
 
         wrist(position);
 
-        strafeSU(speed);
+       hi(speed);
         while (opModeIsActive() &&
                 (wrist.isBusy())) {
 
@@ -137,6 +166,23 @@ public class AutoLineBlueClose extends LinearOpMode {
             telemetry.addData("Running to",  position);
             telemetry.addData("Currently at",
                     wrist.getCurrentPosition());
+            telemetry.update();
+        }
+    }
+    private void lift(double speed, int position) {
+        telemetry.addData("lift", position);
+        telemetry.addData("speed", speed);
+
+        lift(position);
+
+        nice(speed);
+        while (opModeIsActive() &&
+                (lift.isBusy())) {
+
+            // Display it for the driver.
+            telemetry.addData("Running to",  position);
+            telemetry.addData("Currently at",
+                    lift.getCurrentPosition());
             telemetry.update();
         }
     }
@@ -150,10 +196,10 @@ public class AutoLineBlueClose extends LinearOpMode {
         frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
         backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
 
-        rightLift = hardwareMap.dcMotor.get("rightLift");
-        leftLift = hardwareMap.dcMotor.get("leftLift");
+        lift = hardwareMap.dcMotor.get("lift");
 
-        //claw = hardwareMap.get(Servo.class,"claw");
+        leftClaw = hardwareMap.get(Servo.class,"leftclaw");
+        rightClaw = hardwareMap.get(Servo.class,"rightclaw");
         wrist = hardwareMap.dcMotor.get("wrist");
 
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -175,6 +221,11 @@ public class AutoLineBlueClose extends LinearOpMode {
         wrist.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         wrist.setTargetPosition(position);
         wrist.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+    private void lift(int position){
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift.setTargetPosition(position);
+        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     //Drive Forward
     private void go1(int position){
@@ -247,6 +298,23 @@ public class AutoLineBlueClose extends LinearOpMode {
 
         backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRightMotor.setTargetPosition(position);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+    private void spin(int position){
+        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeftMotor.setTargetPosition(position);
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightMotor.setTargetPosition(-position);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftMotor.setTargetPosition(position);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightMotor.setTargetPosition(-position);
         backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
