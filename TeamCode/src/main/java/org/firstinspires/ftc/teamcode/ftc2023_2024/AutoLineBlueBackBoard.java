@@ -37,7 +37,7 @@ public class AutoLineBlueBackBoard extends LinearOpMode {
         driveBackward(.75,200);
         spin(.75, -1500);
         driveForward(.75, 2000);
-        lift(1,1000);
+        lift(1,1000); //SKIPS THIS
         Wrist(1, -200);
         claw(1);
 
