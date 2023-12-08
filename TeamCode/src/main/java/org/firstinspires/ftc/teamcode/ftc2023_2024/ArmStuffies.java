@@ -4,8 +4,8 @@ public class ArmStuffies {
 
     public DcMotor lift = null;
 
-    public void lift(double leftPower){
+    public void lift(double liftPower){
 
-        lift.setPower(leftPower);
+        lift.setPower(-liftPower);
     }
 }

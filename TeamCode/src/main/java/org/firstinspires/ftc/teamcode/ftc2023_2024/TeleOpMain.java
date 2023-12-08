@@ -136,6 +136,9 @@ public class TeleOpMain extends LinearOpMode {
             max = Math.max(max, Math.abs(backLeftPower));
             max = Math.max(max, Math.abs(backRightPower));
 
+            //ben is amazing
+            //i love ben -jack
+
             if (max > 1.0) {
                 frontLeftPower /= max;
                 frontRightPower /= max;
@@ -164,13 +167,23 @@ public class TeleOpMain extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", frontLeftPower, frontRightPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", backLeftPower, backRightPower);
-            telemetry.update();
 
             // lift code
             double  upDown = gamepad2.right_stick_y;
+
             lift.lift(upDown);
 
+            /*if (lift.lift.getCurrentPosition() >= 2500){
+                lift.lift(0);
+            }else {
+                lift.lift(upDown);
+            }*/
 
+
+            telemetry.addData("Lift", lift.lift.getCurrentPosition());
+            telemetry.update();
+
+            //claw stuff
             boolean openClose;
             if(gamepad2.a)
                 openClose = true;
@@ -181,8 +194,8 @@ public class TeleOpMain extends LinearOpMode {
 
 
             //wrist
-            double frick = gamepad2.left_stick_y;
-            wrist.wrist(frick/3);
+            double inOut = gamepad2.left_stick_y;
+            wrist.wrist(inOut);
             wrist.wrist.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
             if (gamepad2.y){

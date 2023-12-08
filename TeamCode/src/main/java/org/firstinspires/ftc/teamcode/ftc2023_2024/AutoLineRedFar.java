@@ -34,7 +34,7 @@ public class AutoLineRedFar extends LinearOpMode {
 
 
         driveForward(.75, 1500);
-        driveBackward(.75,200);
+        driveBackward(.75,1400);
         strafeRight(.75,4800);
 
     }

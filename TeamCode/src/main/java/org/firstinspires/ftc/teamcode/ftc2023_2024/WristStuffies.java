@@ -7,6 +7,6 @@ public class WristStuffies {
     public DcMotor wrist = null;
 
     public void wrist(double frick){
-        wrist.setPower(frick);
+        wrist.setPower(-frick);
     }
 }

@@ -33,13 +33,15 @@ public class AutoLineBlueBackBoard extends LinearOpMode {
         telemetry.addData("Status", "Started");
 
 
-        driveForward(.75, 1500);
+        driveForward(.75, 1400);
         driveBackward(.75,200);
-        spin(.75, -1500);
-        driveForward(.75, 2000);
-        lift(1,1000); //SKIPS THIS
-        Wrist(1, -200);
+        spin(.75, -1200);
+        driveForward(.75, 2300);
+        lift(.5,200);   
+        sleep(1000);
+        Wrist(1, -1200);
         claw(1);
+        sleep(1000);
 
     }
 
@@ -61,7 +63,7 @@ public class AutoLineBlueBackBoard extends LinearOpMode {
         rightClaw.setPosition(position);
     }
     private void nice(double boo){
-        wrist.setPower(boo);
+        lift.setPower(boo);
     }
 
     private void driveForward(double speed, int position) {
@@ -212,6 +214,8 @@ public class AutoLineBlueBackBoard extends LinearOpMode {
         backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         wrist.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         wrist.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
